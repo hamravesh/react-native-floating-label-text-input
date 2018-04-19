@@ -103,11 +103,16 @@ class FloatLabelTextField extends Component {
           <View style={[styles.paddingView, this.leftPadding()]} />
           <View style={[styles.fieldContainer, this.withBorder()]}>
             <FloatingLabel visible={this.state.text}>
-              <Text style={[styles.fieldLabel, this.labelStyle()]}>{this.placeholderValue()}</Text>
+              <Text style={[styles.fieldLabel,{color: this.props.placeholderTextColor}, this.labelStyle()]}>{this.placeholderValue()}</Text>
             </FloatingLabel>
             <TextFieldHolder withValue={this.state.text}>
-              <TextInput {...this.props}
+              <TextInput {...this.props.textInputProps}
                 ref='input'
+                multiline={false}
+                autoCorrect={false}
+                onSubmitEditing={() => this.onSubmit(this.state.text)}
+                keyboardType={this.props.keyboardType}
+                returnKeyType={this.props.returnKeyType}
                 underlineColorAndroid="transparent"
                 style={[styles.valueText]}
                 defaultValue={this.props.defaultValue}
@@ -123,6 +128,7 @@ class FloatLabelTextField extends Component {
       </View>
     );
   }
+
 
   inputRef() {
     return this.refs.input;
@@ -164,7 +170,9 @@ class FloatLabelTextField extends Component {
 
   labelStyle() {
     if (this.state.focused) {
-      return styles.focused;
+      return {
+        color: this.props.activeColor
+      };
     }
   }
 
@@ -182,6 +190,26 @@ class FloatLabelTextField extends Component {
       return this.props.onChangeTextValue(value);
     } catch (_error) { }
   }
+
+  onSubmit(value){
+    try {
+      this.props.onSubmit(value);
+    } catch (e) {
+
+    }
+  }
+}
+
+FloatingLabel.defaultProps ={
+  onSubmit: value => null,
+  onChangeTextValue: value => null,
+  placeHolder: "Please enter your text",
+  activeColor: "#1482fe",
+  onBlur: () => null,
+  onFocus: () => null,
+  keyboardType: "default",
+  returnKeyType: "done",
+  placeholderTextColor: "#7f7f7f"
 }
 
 const styles = StyleSheet.create({
@@ -206,7 +234,6 @@ const styles = StyleSheet.create({
   fieldLabel: {
     height: 15,
     fontSize: 10,
-    color: '#B1B1B1'
   },
   fieldContainer: {
     flex: 1,
